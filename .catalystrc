@@ -1,0 +1,30 @@
+{
+  "defaults": {
+    "project": 1,
+    "env": 1
+  },
+  "actives": {
+    "project": 1,
+    "env": 1
+  },
+  "projects": [
+    {
+      "idx": 1,
+      "id": "6066000000116001",
+      "name": "Nutri-Track",
+      "domain": {
+        "id": "10099223989",
+        "name": "nutri-track-825316455.development"
+      },
+      "timezone": "Asia/Kolkata",
+      "env": [
+        {
+          "idx": 1,
+          "id": "825316455",
+          "name": "Development",
+          "type": 3
+        }
+      ]
+    }
+  ]
+}

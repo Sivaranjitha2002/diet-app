@@ -1,0 +1,9 @@
+id,name,category,calories,protein,carbs,fat,fiber,sugar,sodium,potassium,calcium,iron,vitaminC,vitaminD
+1,Chicken Breast,Protein,165,31,0,3.6,0,0,74,256,15,0.9,0,0.1
+2,Brown Rice,Grains,111,2.6,23,0.9,1.8,0.4,5,43,10,0.4,0,0
+3,Broccoli,Vegetables,34,2.8,7,0.4,2.6,1.5,33,288,47,0.7,89.2,0
+4,Salmon,Protein,208,25.4,0,12.4,0,0,59,628,12,0.8,0,11.1
+5,Quinoa,Grains,120,4.4,22,1.9,2.8,0.9,7,172,17,1.5,0,0
+6,Greek Yogurt,Dairy,97,10,3.6,5,0,3.2,36,141,110,0.1,0.8,0
+7,Avocado,Healthy Fats,160,2,9,15,7,0.7,7,485,12,0.6,10,0
+8,Sweet Potato,Vegetables,86,1.6,20,0.1,3,4.2,54,337,30,0.6,2.4,0
