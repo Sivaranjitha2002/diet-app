@@ -21,7 +21,7 @@ export class Database {
   public datastore: Datastore = new Datastore();
 
   private constructor() {
-    this.initializeFoodDatabase();
+    // this.initializeFoodDatabase();
   }
 
   public static getInstance(): Database {
@@ -31,10 +31,10 @@ export class Database {
     return Database.instance;
   }
 
-  private initializeFoodDatabase() {
-    const foods: Food[] = [];
-    foods.forEach(food => this.foods.set(food.id, food));
-  }
+  // private initializeFoodDatabase() {
+  //   const foods: Food[] = [];
+  //   foods.forEach(food => this.foods.set(food.id, food));
+  // }
 
   // User operations
   public createUser(user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): User {
@@ -48,13 +48,6 @@ export class Database {
     return newUser;
   }
 
-  public getUserById(id: string): User | undefined {
-    return this.users.get(id);
-  }
-
-  public getUserByEmail(email: string): User | undefined {
-    return Array.from(this.users.values()).find(user => user.email === email);
-  }
 
   public updateUser(id: string, updates: Partial<User>): User | undefined {
     const user = this.users.get(id);

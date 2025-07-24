@@ -13,10 +13,7 @@ export declare class Database {
     datastore: Datastore;
     private constructor();
     static getInstance(): Database;
-    private initializeFoodDatabase;
     createUser(user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): User;
-    getUserById(id: string): User | undefined;
-    getUserByEmail(email: string): User | undefined;
     updateUser(id: string, updates: Partial<User>): User | undefined;
     getAllFoods(): Promise<ICatalystRow[]>;
     getFoodById(id: string): Food | undefined;

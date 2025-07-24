@@ -12,7 +12,7 @@ export function getBMICategory(bmi: number): string {
   return 'Obese';
 }
 
-export function calculateBMR(user: User): number {
+export function calculateBMR(user: Record<string, any>): number {
   // Mifflin-St Jeor Equation
   const { weight, height, age, gender } = user;
   
@@ -35,7 +35,7 @@ export function calculateTDEE(bmr: number, activityLevel: User['activityLevel'])
   return Math.round(bmr * multipliers[activityLevel]);
 }
 
-export function calculateDailyCalories(user: User): number {
+export function calculateDailyCalories(user: Record<string, any>): number {
   const bmr = calculateBMR(user);
   const tdee = calculateTDEE(bmr, user.activityLevel);
   
@@ -49,7 +49,7 @@ export function calculateDailyCalories(user: User): number {
   }
 }
 
-export function generateNutritionGoals(user: User): NutritionGoals {
+export function generateNutritionGoals(user: Record<string, any>): NutritionGoals {
   const dailyCalories = calculateDailyCalories(user);
   
   return {

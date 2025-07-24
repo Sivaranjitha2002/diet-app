@@ -2,7 +2,8 @@ import nodemailer from 'nodemailer';
 import twilio from 'twilio';
 import cron from 'node-cron';
 import { Database } from '../config/database';
-import { Notification, User } from '../types';
+import { Notification } from '../types';
+import { UserManagement } from '@zcatalyst/user-management';
 
 export class NotificationService {
   private db: Database;
@@ -38,7 +39,7 @@ export class NotificationService {
     }
   }
 
-  public async sendEmailNotification(user: User, notification: Notification): Promise<boolean> {
+  public async sendEmailNotification(user: Record<string, any>, notification: Notification): Promise<boolean> {
     try {
       const mailOptions = {
         from: process.env.EMAIL_USER,
@@ -73,7 +74,7 @@ export class NotificationService {
     }
   }
 
-  public async sendSMSNotification(user: User, notification: Notification): Promise<boolean> {
+  public async sendSMSNotification(user: Record<string, any>, notification: Notification): Promise<boolean> {
     if (!this.twilioClient || !user.phone) {
       return false;
     }
@@ -99,6 +100,7 @@ export class NotificationService {
   }
 
   private async checkAndSendNotifications() {
+    const userManagement = new UserManagement();
     const now = new Date();
     const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
@@ -107,7 +109,7 @@ export class NotificationService {
       .filter(notification => notification.enabled && notification.scheduledTime === currentTime);
 
     for (const notification of allNotifications) {
-      const user = this.db.getUserById(notification.userId);
+      const user = await userManagement.getUserDetails(notification.userId);
       if (!user) continue;
 
       // Check if we already sent this notification today

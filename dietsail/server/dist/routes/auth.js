@@ -4,29 +4,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const database_1 = require("../config/database");
-const auth_1 = require("../middleware/auth");
 const notificationService_1 = require("../services/notificationService");
+const user_management_1 = require("@zcatalyst/user-management");
+const datastore_1 = require("@zcatalyst/datastore");
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const router = express_1.default.Router();
 const db = database_1.Database.getInstance();
 const notificationService = new notificationService_1.NotificationService();
+const userManagement = new user_management_1.UserManagement();
+const datastore = new datastore_1.Datastore();
 // Register
 router.post('/register', async (req, res) => {
     try {
-        const { name, email, password, phone, age, gender, height, weight, targetWeight, activityLevel, dietGoal, dietPreferences, allergies, healthConditions } = req.body;
+        const { firstName, lastName, phone, email, age, gender, height, weight, targetWeight, activityLevel, dietGoal, dietPreferences, allergies, healthConditions } = req.body;
         // Check if user already exists
-        const existingUser = db.getUserByEmail(email);
+        const existingUser = (await userManagement.getAllUsers()).find(user => user.email_id === email);
         if (existingUser) {
             return res.status(400).json({ error: 'User already exists with this email' });
         }
         // Hash password
-        const hashedPassword = await bcryptjs_1.default.hash(password, 10);
+        // const hashedPassword = await bcrypt.hash(password, 10);
         // Create user
-        const user = db.createUser({
-            name,
-            email,
-            password: hashedPassword,
+        const userResponse = await userManagement.registerUser({ platform_type: 'web' }, { email_id: email, first_name: firstName, last_name: lastName });
+        const insertResponse = await datastore.table('users').insertRow({
+            id: userResponse.id,
             phone,
             age,
             gender,
@@ -39,16 +42,9 @@ router.post('/register', async (req, res) => {
             allergies: allergies || [],
             healthConditions: healthConditions || []
         });
-        // Create default notifications for user
-        notificationService.createUserNotifications(user.id);
-        // Generate token
-        const token = (0, auth_1.generateToken)(user.id);
-        // Remove password from response
-        const { password: _, ...userResponse } = user;
         res.status(201).json({
-            message: 'User registered successfully',
-            user: userResponse,
-            token
+            message: 'User registered successfully. Please check your email for verification.',
+            user: insertResponse
         });
     }
     catch (error) {
@@ -59,25 +55,15 @@ router.post('/register', async (req, res) => {
 // Login
 router.post('/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email } = req.body;
         // Find user
-        const user = db.getUserByEmail(email);
+        const user = (await userManagement.getAllUsers()).find(user => user.email_id === email);
         if (!user) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
-        // Check password
-        const isValidPassword = await bcryptjs_1.default.compare(password, user.password);
-        if (!isValidPassword) {
-            return res.status(401).json({ error: 'Invalid credentials' });
-        }
-        // Generate token
-        const token = (0, auth_1.generateToken)(user.id);
-        // Remove password from response
-        const { password: _, ...userResponse } = user;
         res.json({
             message: 'Login successful',
-            user: userResponse,
-            token
+            user: user,
         });
     }
     catch (error) {

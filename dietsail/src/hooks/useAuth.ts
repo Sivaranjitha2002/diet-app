@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { apiService } from '../services/api';
 import { User } from '../types';
+import { zcAuth } from '@zcatalyst/auth-client';
 
 interface AuthContextType {
   user: User | null;
@@ -22,18 +23,18 @@ export const useAuth = () => {
 };
 
 export const useAuthState = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<Record<string, any> | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const initAuth = async () => {
-      if (apiService.isAuthenticated()) {
+      if (await zcAuth.isUserAuthenticated()) {
         try {
-          const userData = await apiService.getUserProfile();
+          const userData = await zcAuth.getProjectUserDetails();
           setUser(userData);
         } catch (error) {
           console.error('Failed to load user profile:', error);
-          apiService.logout();
+          zcAuth.signOut('/logout.html');
         }
       }
       setLoading(false);
@@ -42,11 +43,11 @@ export const useAuthState = () => {
     initAuth();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async () => {
     setLoading(true);
     try {
-      const response = await apiService.login(email, password);
-      setUser(response.user);
+      await zcAuth.hostedSignIn();
+      setUser(await zcAuth.getProjectUserDetails());
     } catch (error) {
       throw error;
     } finally {
@@ -57,8 +58,8 @@ export const useAuthState = () => {
   const register = async (userData: any) => {
     setLoading(true);
     try {
-      const response = await apiService.register(userData);
-      setUser(response.user);
+      await zcAuth.signUp(userData);
+      setUser(await zcAuth.getProjectUserDetails());
     } catch (error) {
       throw error;
     } finally {

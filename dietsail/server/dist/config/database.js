@@ -19,7 +19,7 @@ class Database {
         this.progressEntries = new Map();
         this.aiRecommendations = new Map();
         this.datastore = new datastore_1.Datastore();
-        this.initializeFoodDatabase();
+        // this.initializeFoodDatabase();
     }
     static getInstance() {
         if (!Database.instance) {
@@ -27,10 +27,10 @@ class Database {
         }
         return Database.instance;
     }
-    initializeFoodDatabase() {
-        const foods = [];
-        foods.forEach(food => this.foods.set(food.id, food));
-    }
+    // private initializeFoodDatabase() {
+    //   const foods: Food[] = [];
+    //   foods.forEach(food => this.foods.set(food.id, food));
+    // }
     // User operations
     createUser(user) {
         const newUser = {
@@ -41,12 +41,6 @@ class Database {
         };
         this.users.set(newUser.id, newUser);
         return newUser;
-    }
-    getUserById(id) {
-        return this.users.get(id);
-    }
-    getUserByEmail(email) {
-        return Array.from(this.users.values()).find(user => user.email === email);
     }
     updateUser(id, updates) {
         const user = this.users.get(id);

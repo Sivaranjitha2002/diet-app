@@ -49,8 +49,8 @@ class ApiService {
       body: JSON.stringify({ email, password }),
     });
     
-    if (response.token) {
-      this.token = response.token;
+    if (response.user_id) {
+      this.token = response.user_id;
       localStorage.setItem('authToken', response.token);
     }
     

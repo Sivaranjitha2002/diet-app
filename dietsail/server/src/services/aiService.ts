@@ -9,7 +9,7 @@ export class AIService {
     this.db = Database.getInstance();
   }
 
-  public async generateMealRecommendations(user: User): Promise<{
+  public async generateMealRecommendations(user: Record<string, any>): Promise<{
     meals: Array<{ name: string; foods: ICatalystRow[]; reason: string }>;
     tips: string[];
     insights: string[];
@@ -77,7 +77,7 @@ export class AIService {
     };
   }
 
-  public async generateDietPlan(user: User, duration: number = 7): Promise<any> {
+  public async generateDietPlan(user: Record<string, any>, duration: number = 7): Promise<any> {
     // Simulate AI processing
     await new Promise(resolve => setTimeout(resolve, 2000));
 
@@ -92,7 +92,7 @@ export class AIService {
     };
   }
 
-  private calculateDailyCalories(user: User): number {
+  private calculateDailyCalories(user: Record<string, any>): number {
     const bmr = this.calculateBMR(user);
     const tdee = this.calculateTDEE(bmr, user.activityLevel);
     
@@ -106,7 +106,7 @@ export class AIService {
     }
   }
 
-  private calculateBMR(user: User): number {
+  private calculateBMR(user: Record<string, any>): number {
     const { weight, height, age, gender } = user;
     
     if (gender === 'male') {

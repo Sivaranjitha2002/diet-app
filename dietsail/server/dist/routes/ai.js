@@ -7,13 +7,16 @@ const express_1 = __importDefault(require("express"));
 const database_1 = require("../config/database");
 const auth_1 = require("../middleware/auth");
 const aiService_1 = require("../services/aiService");
+const user_management_1 = require("@zcatalyst/user-management");
 const router = express_1.default.Router();
 const db = database_1.Database.getInstance();
 const aiService = new aiService_1.AIService();
+const userManagement = new user_management_1.UserManagement();
 // Get AI meal recommendations
 router.get('/recommendations', auth_1.authenticateToken, async (req, res) => {
     try {
-        const user = db.getUserById(req.user.userId);
+        console.log('Fetching AI meal recommendations for user:', req.user.userId);
+        const user = await userManagement.getUserDetails(req.user.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -28,7 +31,7 @@ router.get('/recommendations', auth_1.authenticateToken, async (req, res) => {
 // Generate AI diet plan
 router.post('/diet-plan', auth_1.authenticateToken, async (req, res) => {
     try {
-        const user = db.getUserById(req.user.userId);
+        const user = await userManagement.getUserDetails(req.user.userId);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }

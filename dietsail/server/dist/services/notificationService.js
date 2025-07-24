@@ -8,6 +8,7 @@ const nodemailer_1 = __importDefault(require("nodemailer"));
 const twilio_1 = __importDefault(require("twilio"));
 const node_cron_1 = __importDefault(require("node-cron"));
 const database_1 = require("../config/database");
+const user_management_1 = require("@zcatalyst/user-management");
 class NotificationService {
     constructor() {
         this.scheduledJobs = new Map();
@@ -90,13 +91,14 @@ class NotificationService {
         });
     }
     async checkAndSendNotifications() {
+        const userManagement = new user_management_1.UserManagement();
         const now = new Date();
         const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
         // Get all enabled notifications
         const allNotifications = Array.from(this.db.notifications.values())
             .filter(notification => notification.enabled && notification.scheduledTime === currentTime);
         for (const notification of allNotifications) {
-            const user = this.db.getUserById(notification.userId);
+            const user = await userManagement.getUserDetails(notification.userId);
             if (!user)
                 continue;
             // Check if we already sent this notification today

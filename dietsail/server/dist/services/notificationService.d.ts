@@ -1,4 +1,4 @@
-import { Notification, User } from '../types';
+import { Notification } from '../types';
 export declare class NotificationService {
     private db;
     private emailTransporter?;
@@ -7,8 +7,8 @@ export declare class NotificationService {
     constructor();
     private initializeEmailService;
     private initializeSMSService;
-    sendEmailNotification(user: User, notification: Notification): Promise<boolean>;
-    sendSMSNotification(user: User, notification: Notification): Promise<boolean>;
+    sendEmailNotification(user: Record<string, any>, notification: Notification): Promise<boolean>;
+    sendSMSNotification(user: Record<string, any>, notification: Notification): Promise<boolean>;
     scheduleNotifications(): void;
     private checkAndSendNotifications;
     createUserNotifications(userId: string): Notification[];

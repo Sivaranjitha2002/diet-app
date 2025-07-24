@@ -7,7 +7,7 @@ import { Dashboard } from './components/Dashboard';
 import { MealPlanner } from './components/MealPlanner';
 import { AIRecommendations } from './components/AIRecommendations';
 import { NotificationPanel } from './components/NotificationPanel';
-import { AuthForm } from './components/AuthForm';
+// import { AuthForm } from './components/AuthForm';
 
 function App() {
   const { user, loading, login, register, logout } = useAuthState();
@@ -96,7 +96,7 @@ function App() {
   }
 
   if (!user) {
-    return <AuthForm onLogin={login} onRegister={register} />;
+    // return <AuthForm onLogin={login} onRegister={register} />;
   }
 
   if (!nutritionGoals) {

@@ -9,9 +9,9 @@ const auth_1 = require("../middleware/auth");
 const router = express_1.default.Router();
 const db = database_1.Database.getInstance();
 // Get all foods
-router.get('/', auth_1.authenticateToken, (req, res) => {
+router.get('/', auth_1.authenticateToken, async (req, res) => {
     try {
-        const foods = db.getAllFoods();
+        const foods = await db.getAllFoods();
         res.json(foods);
     }
     catch (error) {

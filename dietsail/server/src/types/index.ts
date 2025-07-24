@@ -1,9 +1,7 @@
 export interface User {
-  id: string;
-  name: string;
   email: string;
+  id: string;
   phone?: string;
-  password: string;
   age: number;
   gender: 'male' | 'female' | 'other';
   height: number; // in cm
