@@ -6,11 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateToken = exports.authenticateToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const authenticateToken = (req, res, next) => {
-    const authHeader = req.headers['cookie'];
-    const token = authHeader && authHeader.split(' ')[1];
-    if (!token) {
-        return res.status(401).json({ error: 'Access token required' });
-    }
+    // const authHeader = req.headers['cookie'];
+    // const token = authHeader && authHeader.split(' ')[1];
+    // const token = req.cookies.token;
+    console.log('middleware triggered');
+    next();
 };
 exports.authenticateToken = authenticateToken;
 const generateToken = (userId) => {

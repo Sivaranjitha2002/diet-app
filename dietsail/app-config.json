@@ -1,8 +1,13 @@
 {
-	"command": "node index.js",
+	"command": "node server/dist/index.js",
 	"build_path": "./",
 	"stack": "node20",
-	"env_variables": {},
+	"env_variables": {
+		"PROJECT_CONFIG" : "{\"project_id\": \"30268000000044001\",\"project_key\": \"1034503833\",\"project_domain\": \"diet-app-2-101894730.development\",\"environment\": \"Development\"}",
+		"AUTH_CONFIG": "{\"client_id\": \"1000.PQLJFH0VKR6MDHKWG2C5QZV44OF0RY\",\"client_secret\": \"ac617fc16e3beded165385af1980c787e41c1d5c7c\",\"refresh_token\": \"1000.24684c9ebe7b02c52f1f41e1daff3dbd.e10567c8bbb56682dd230759050d2efa\"}"
+	},
 	"memory": 256,
-	"scripts": {}
+	"scripts": {},
+	"catalyst_auth": true,
+	"login_redirect": "/index.html"
 }

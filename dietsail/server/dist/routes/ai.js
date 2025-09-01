@@ -4,23 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const database_1 = require("../config/database");
-const auth_1 = require("../middleware/auth");
 const aiService_1 = require("../services/aiService");
-const user_management_1 = require("@zcatalyst/user-management");
 const router = express_1.default.Router();
-const db = database_1.Database.getInstance();
-const aiService = new aiService_1.AIService();
-const userManagement = new user_management_1.UserManagement();
 // Get AI meal recommendations
-router.get('/recommendations', auth_1.authenticateToken, async (req, res) => {
+router.get('/recommendations', async (req, res) => {
     try {
-        console.log('Fetching AI meal recommendations for user:', req.user.userId);
-        const user = await userManagement.getUserDetails(req.user.userId);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        const recommendations = await aiService.generateMealRecommendations(user);
+        const aiService = new aiService_1.AIService();
+        const recommendations = await aiService.generateMealRecommendations(req.query.userId);
+        console.log('AI recommendations:', recommendations);
         res.json(recommendations);
     }
     catch (error) {
@@ -29,14 +20,11 @@ router.get('/recommendations', auth_1.authenticateToken, async (req, res) => {
     }
 });
 // Generate AI diet plan
-router.post('/diet-plan', auth_1.authenticateToken, async (req, res) => {
+router.post('/diet-plan', async (req, res) => {
     try {
-        const user = await userManagement.getUserDetails(req.user.userId);
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
+        const aiService = new aiService_1.AIService();
         const { duration = 7 } = req.body;
-        const dietPlan = await aiService.generateDietPlan(user, duration);
+        const dietPlan = await aiService.generateDietPlan(duration);
         res.json({
             message: 'AI diet plan generated successfully',
             dietPlan

@@ -1,14 +1,14 @@
 import express from 'express';
 import { Database } from '../config/database';
-import { authenticateToken } from '../middleware/auth';
 
 const router = express.Router();
-const db = Database.getInstance();
+// Load environment variables
 
 // Get user notifications
-router.get('/', authenticateToken, (req: any, res) => {
+router.get('/', (req: any, res) => {
   try {
-    const notifications = db.getNotificationsByUserId(req.user.userId);
+    const db = Database.getInstance();
+    const notifications = db.getNotificationsByUserId(req.params.userId);
     res.json(notifications);
   } catch (error) {
     console.error('Get notifications error:', error);
@@ -17,8 +17,9 @@ router.get('/', authenticateToken, (req: any, res) => {
 });
 
 // Update notification
-router.put('/:id', authenticateToken, (req: any, res) => {
+router.put('/:id', (req: any, res) => {
   try {
+    const db = Database.getInstance();
     const notification = db.notifications.get(req.params.id);
     if (!notification || notification.userId !== req.user.userId) {
       return res.status(404).json({ error: 'Notification not found' });
@@ -36,8 +37,9 @@ router.put('/:id', authenticateToken, (req: any, res) => {
 });
 
 // Toggle notification
-router.patch('/:id/toggle', authenticateToken, (req: any, res) => {
+router.patch('/:id/toggle', (req: any, res) => {
   try {
+    const db = Database.getInstance();
     const notification = db.notifications.get(req.params.id);
     if (!notification || notification.userId !== req.user.userId) {
       return res.status(404).json({ error: 'Notification not found' });

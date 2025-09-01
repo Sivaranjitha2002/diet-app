@@ -1,8 +1,8 @@
 import { ICatalystRow } from '@zcatalyst/datastore/dist-types/utils/interface';
 import { User, Food, Meal, DietPlan, Notification, ProgressEntry, AIRecommendation } from '../types';
-import { Datastore } from '@zcatalyst/datastore';
 export declare class Database {
     private static instance;
+    private pushNotification;
     users: Map<string, User>;
     foods: Map<string, Food>;
     meals: Map<string, Meal>;
@@ -10,21 +10,34 @@ export declare class Database {
     notifications: Map<string, Notification>;
     progressEntries: Map<string, ProgressEntry>;
     aiRecommendations: Map<string, AIRecommendation>;
-    datastore: Datastore;
     private constructor();
     static getInstance(): Database;
     createUser(user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): User;
     updateUser(id: string, updates: Partial<User>): User | undefined;
-    getAllFoods(): Promise<ICatalystRow[]>;
+    getAllFoods(): Promise<Record<string, unknown>[]>;
     getFoodById(id: string): Food | undefined;
     searchFoods(query: string): Food[];
-    createMeal(meal: Omit<Meal, 'id' | 'createdAt'>): Meal;
-    getMealsByUserId(userId: string): Meal[];
-    getMealsByUserAndDate(userId: string, date: string): Meal[];
+    createMeal(meal: Omit<Meal, 'id' | 'createdAt'>): Promise<ICatalystRow>;
+    getMealsByUserId(userId: string): Promise<Array<Record<string, unknown>>>;
+    getMealsByUserAndDate(userId: string, date: string): Promise<Array<Record<string, unknown>>>;
+    updateMeal(id: string, updates: Partial<Meal>): Promise<Record<string, unknown>>;
     createNotification(notification: Omit<Notification, 'id'>): Notification;
     getNotificationsByUserId(userId: string): Notification[];
     updateNotification(id: string, updates: Partial<Notification>): Notification | undefined;
     createProgressEntry(entry: Omit<ProgressEntry, 'id'>): ProgressEntry;
     getProgressByUserId(userId: string): ProgressEntry[];
+    registerDeviceToken(userId: string, deviceToken: string, platform: 'ios' | 'android' | 'web'): Promise<void>;
+    removeDeviceToken(userId: string, deviceToken: string): Promise<void>;
+    getUserDeviceTokens(userId: string): Promise<string[]>;
+    sendPushNotification(userId: string, title: string, message: string, data?: Record<string, any>): Promise<void>;
+    sendMealReminderNotification(userId: string, mealName: string, mealTime: string): Promise<void>;
+    sendProgressUpdateNotification(userId: string, progressType: string, value: string): Promise<void>;
+    sendAIRecommendationNotification(userId: string, recommendation: string): Promise<void>;
+    sendBulkNotification(userIds: string[], title: string, message: string, data?: Record<string, any>): Promise<void>;
+    scheduleMealNotification(mealId: string, userId: string, scheduledTime: string, mealName: string): Promise<void>;
+    checkAndSendMealNotifications(): Promise<void>;
+    private getTimeRange;
+    getMealNotificationHistory(userId: string): Promise<Array<Record<string, unknown>>>;
+    cancelMealNotification(mealId: string, userId: string): Promise<void>;
 }
 //# sourceMappingURL=database.d.ts.map

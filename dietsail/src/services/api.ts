@@ -4,7 +4,18 @@ class ApiService {
   private token: string | null = null;
 
   constructor() {
-    this.token = localStorage.getItem('authToken');
+  }
+
+  // Utility to build query params from an object
+  private buildQueryParams(params: Record<string, any>): string {
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        searchParams.append(key, String(value));
+      }
+    });
+    const queryString = searchParams.toString();
+    return queryString ? `?${queryString}` : '';
   }
 
   private async request(endpoint: string, options: RequestInit = {}) {
@@ -12,7 +23,6 @@ class ApiService {
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
-        ...(this.token && { Authorization: `Bearer ${this.token}` }),
         ...options.headers,
       },
       ...options,
@@ -26,40 +36,6 @@ class ApiService {
     }
 
     return response.json();
-  }
-
-  // Auth methods
-  async register(userData: any) {
-    const response = await this.request('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(userData),
-    });
-    
-    if (response.token) {
-      this.token = response.token;
-      localStorage.setItem('authToken', response.token);
-    }
-    
-    return response;
-  }
-
-  async login(email: string, password: string) {
-    const response = await this.request('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    });
-    
-    if (response.user_id) {
-      this.token = response.user_id;
-      localStorage.setItem('authToken', response.token);
-    }
-    
-    return response;
-  }
-
-  logout() {
-    this.token = null;
-    localStorage.removeItem('authToken');
   }
 
   // User methods
@@ -92,15 +68,26 @@ class ApiService {
   }
 
   // Meal methods
-  async createMeal(mealData: any) {
-    return this.request('/meals', {
+  async createMeal(mealData: any, userId: string) {
+    return this.request(`/meals?userId=${encodeURIComponent(userId)}`, {
       method: 'POST',
       body: JSON.stringify(mealData),
     });
   }
 
-  async getUserMeals(date?: string) {
-    const endpoint = date ? `/meals?date=${date}` : '/meals';
+  async updateMeal(mealData: any, userId: string) {
+    return this.request(`/meals?userId=${encodeURIComponent(userId)}`, {
+      method: 'PUT',
+      body: JSON.stringify(mealData),
+    });
+  }
+
+  async getUserMeals(userId: string, date?: string) {
+    let endpoint = '/meals';
+    console.log('Fetching meals for user:', userId, 'on date:', date);
+    const queryParams = this.buildQueryParams({ userId, date });
+    console.log('Query Params:', queryParams);
+    if (queryParams) endpoint += queryParams;
     return this.request(endpoint);
   }
 
@@ -110,21 +97,10 @@ class ApiService {
     });
   }
 
-  // AI methods
-  async getAIRecommendations() {
-    return this.request('/ai/recommendations');
-  }
-
-  async generateDietPlan(duration: number = 7) {
-    return this.request('/ai/diet-plan', {
-      method: 'POST',
-      body: JSON.stringify({ duration }),
-    });
-  }
-
   // Notification methods
-  async getNotifications() {
-    return this.request('/notifications');
+  async getNotifications(userId: string) {
+    console.log('Fetching notifications for user:', userId);
+    return this.request(`/notifications?userId=${encodeURIComponent(userId)}`);
   }
 
   async updateNotification(id: string, updates: any) {

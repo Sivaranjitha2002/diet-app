@@ -1,14 +1,15 @@
 import express from 'express';
-import { Database } from '../config/database';
-import { authenticateToken } from '../middleware/auth';
+import { ZCQL } from '@zcatalyst/zcql';
+import { Datastore } from '@zcatalyst/datastore';
+import { Search } from '@zcatalyst/search';
 
 const router = express.Router();
-const db = Database.getInstance();
 
 // Get all foods
-router.get('/', authenticateToken, async (req, res) => {
+router.get('/',  async (req, res) => {
+  const db = new ZCQL();
   try {
-    const foods = await db.getAllFoods();
+    const foods = await db.executeZCQLQuery('select * from foods');
     res.json(foods);
   } catch (error) {
     console.error('Get foods error:', error);
@@ -17,14 +18,20 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // Search foods
-router.get('/search', authenticateToken, (req, res) => {
+router.get('/search', async (req, res) => {
   try {
+    const search = new Search();
     const { q } = req.query;
     if (!q || typeof q !== 'string') {
       return res.status(400).json({ error: 'Search query required' });
     }
 
-    const foods = db.searchFoods(q);
+    const foods = await search.executeSearchQuery({
+      search: q,
+      search_table_columns: {
+        ['foods']: ['name', 'category']
+      }
+    });
     res.json(foods);
   } catch (error) {
     console.error('Search foods error:', error);
@@ -33,9 +40,10 @@ router.get('/search', authenticateToken, (req, res) => {
 });
 
 // Get food by ID
-router.get('/:id', authenticateToken, (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-    const food = db.getFoodById(req.params.id);
+    const datastore = new Datastore();
+    const food = await datastore.table('foods').getRow(req.params.id);
     if (!food) {
       return res.status(404).json({ error: 'Food not found' });
     }

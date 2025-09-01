@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Notification } from '../types';
 import { Bell, Clock, Utensils, Dumbbell, Scale, Heart, X } from 'lucide-react';
+import { PushNotification } from '@zcatalyst/push-notification';
 
 interface NotificationPanelProps {
   isOpen: boolean;
@@ -18,6 +19,8 @@ export function NotificationPanel({
   onUpdateNotification 
 }: NotificationPanelProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
 
   if (!isOpen) return null;
 
@@ -33,6 +36,31 @@ export function NotificationPanel({
         return <Heart className="h-5 w-5 text-red-600" />;
       default:
         return <Bell className="h-5 w-5 text-gray-600" />;
+    }
+  };
+
+  function testFunc() {
+    console.log('Test function in NotificationPanel');
+  }
+
+  const registerClient = async () => {
+    setIsRegistering(true);
+    try {
+      const pushNotification = new PushNotification();
+
+      // Enable notifications
+      await pushNotification.enableNotification();
+
+      // Set up message handler before enabling notifications
+      pushNotification.messageHandler = (message) => {
+        console.log('Received notification:', message);
+        testFunc();
+      };
+      setIsRegistered(true);
+    } catch (error) {
+      console.error('Failed to register for push notifications:', error);
+    } finally {
+      setIsRegistering(false);
     }
   };
 
@@ -117,10 +145,27 @@ export function NotificationPanel({
 
           <div className="mt-8 p-4 bg-blue-50 rounded-lg">
             <h4 className="font-medium text-blue-900 mb-2">Notification Settings</h4>
-            <p className="text-sm text-blue-700">
-              Notifications will be sent to your registered email and phone number. 
+            <p className="text-sm text-blue-700 mb-3">
+              Notifications will be sent to your registered email and phone number.
               Make sure to keep your contact information up to date in your profile.
             </p>
+            
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-blue-700">Push Notifications</span>
+              <button
+                onClick={registerClient}
+                disabled={isRegistering || isRegistered}
+                className={`px-3 py-1 text-sm rounded-md transition-colors ${
+                  isRegistered 
+                    ? 'bg-green-100 text-green-700 cursor-not-allowed'
+                    : isRegistering
+                    ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
+                    : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                }`}
+              >
+                {isRegistering ? 'Registering...' : isRegistered ? 'Registered' : 'Enable Push'}
+              </button>
+            </div>
           </div>
         </div>
       </div>

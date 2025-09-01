@@ -123,7 +123,8 @@ class NotificationService {
                 title: 'Breakfast Time',
                 message: 'Time for your healthy breakfast!',
                 scheduledTime: '07:30',
-                enabled: true
+                enabled: true,
+                // id: ''
             },
             {
                 userId,
@@ -131,7 +132,8 @@ class NotificationService {
                 title: 'Lunch Reminder',
                 message: 'Don\'t forget your balanced lunch',
                 scheduledTime: '12:30',
-                enabled: true
+                enabled: true,
+                // id: ''
             },
             {
                 userId,
@@ -139,7 +141,8 @@ class NotificationService {
                 title: 'Dinner Time',
                 message: 'Time for a nutritious dinner',
                 scheduledTime: '18:30',
-                enabled: true
+                enabled: true,
+                id: ''
             },
             {
                 userId,
@@ -147,7 +150,8 @@ class NotificationService {
                 title: 'Workout Reminder',
                 message: 'Time for your daily exercise routine',
                 scheduledTime: '16:00',
-                enabled: true
+                enabled: true,
+                // id: ''
             },
             {
                 userId,
@@ -155,7 +159,8 @@ class NotificationService {
                 title: 'Weight Check',
                 message: 'Time to track your progress',
                 scheduledTime: '07:00',
-                enabled: false
+                enabled: false,
+                // id: ''
             },
             {
                 userId,
@@ -163,7 +168,8 @@ class NotificationService {
                 title: 'Health Metrics',
                 message: 'Record your daily health metrics',
                 scheduledTime: '21:00',
-                enabled: true
+                enabled: true,
+                // id: ''
             }
         ];
         return defaultNotifications.map(notif => this.db.createNotification(notif));

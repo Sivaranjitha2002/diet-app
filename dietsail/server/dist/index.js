@@ -4,33 +4,40 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const cors_1 = __importDefault(require("cors"));
-const dotenv_1 = __importDefault(require("dotenv"));
 const path_1 = __importDefault(require("path"));
-const notificationService_1 = require("./services/notificationService");
+const mealScheduler_1 = require("./services/mealScheduler");
 // Import routes
 const auth_1 = __importDefault(require("./routes/auth"));
 const users_1 = __importDefault(require("./routes/users"));
 const foods_1 = __importDefault(require("./routes/foods"));
 const meals_1 = __importDefault(require("./routes/meals"));
-const ai_1 = __importDefault(require("./routes/ai"));
 const notifications_1 = __importDefault(require("./routes/notifications"));
-// Load environment variables
-dotenv_1.default.config();
 const app = (0, express_1.default)();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.X_ZOHO_CATALYST_LISTEN_PORT;
 // Middleware
-app.use((0, cors_1.default)({
-    origin: process.env.NODE_ENV === 'production'
-        ? ['https://your-frontend-domain.com']
-        : ['http://localhost:5173', 'http://localhost:3000'],
-    credentials: true
-}));
+// app.use(cors({
+//   origin: process.env.NODE_ENV === 'production' 
+//     ? ['https://your-frontend-domain.com'] 
+//     : ['http://localhost:5173', 'http://localhost:3000'],
+//   credentials: true
+// }));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
-// Serve static files from React build
+// Serve static files from React build with proper MIME types
 const frontendPath = path_1.default.join(__dirname, '../../dist');
-app.use(express_1.default.static(frontendPath));
+app.use(express_1.default.static(frontendPath, {
+    setHeaders: (res, path) => {
+        if (path.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        }
+        else if (path.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css');
+        }
+        else if (path.endsWith('.json')) {
+            res.setHeader('Content-Type', 'application/json');
+        }
+    }
+}));
 // Health check endpoint
 app.get('/health', (req, res) => {
     res.json({
@@ -40,17 +47,24 @@ app.get('/health', (req, res) => {
     });
 });
 // API Routes
-app.use('/api/auth', auth_1.default);
+app.use('/api/data', auth_1.default);
 app.use('/api/users', users_1.default);
 app.use('/api/foods', foods_1.default);
 app.use('/api/meals', meals_1.default);
-app.use('/api/ai', ai_1.default);
 app.use('/api/notifications', notifications_1.default);
-// Serve React app for all non-API routes
+// Serve React homepage at root
+app.get('/', (req, res) => {
+    res.sendFile(path_1.default.join(frontendPath, 'index.html'));
+});
+// Serve React app for all non-API and non-asset routes
 app.get('*', (req, res) => {
     // Don't serve React app for API routes
     if (req.path.startsWith('/api/')) {
         return res.status(404).json({ error: 'API route not found' });
+    }
+    // Don't serve React app for static assets
+    if (req.path.includes('.') && !req.path.endsWith('.html')) {
+        return res.status(404).send('Asset not found');
     }
     res.sendFile(path_1.default.join(frontendPath, 'index.html'));
 });
@@ -62,12 +76,8 @@ app.use((err, req, res, next) => {
         message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
     });
 });
-// 404 handler
-app.use('*', (req, res) => {
-    res.status(404).json({ error: 'Route not found' });
-});
-// Initialize notification service
-const notificationService = new notificationService_1.NotificationService();
+// Initialize meal scheduler
+const mealScheduler = new mealScheduler_1.MealScheduler();
 // Start server
 app.listen(PORT, () => {
     console.log(`🚀 NutriAI Server running on port ${PORT}`);
@@ -75,6 +85,20 @@ app.listen(PORT, () => {
     console.log(`📱 SMS notifications: ${process.env.TWILIO_ACCOUNT_SID ? 'Enabled' : 'Disabled'}`);
     console.log(`🤖 AI services: Ready`);
     console.log(`⏰ Notification scheduler: Active`);
+    // Start meal notification scheduler
+    mealScheduler.start();
+    console.log(`🍽️ Meal notification scheduler: Active`);
+});
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received, shutting down gracefully');
+    mealScheduler.stop();
+    process.exit(0);
+});
+process.on('SIGINT', () => {
+    console.log('SIGINT received, shutting down gracefully');
+    mealScheduler.stop();
+    process.exit(0);
 });
 exports.default = app;
 //# sourceMappingURL=index.js.map

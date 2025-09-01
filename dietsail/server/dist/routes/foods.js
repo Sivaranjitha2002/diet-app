@@ -4,14 +4,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const database_1 = require("../config/database");
-const auth_1 = require("../middleware/auth");
+const zcql_1 = require("@zcatalyst/zcql");
+const datastore_1 = require("@zcatalyst/datastore");
+const search_1 = require("@zcatalyst/search");
 const router = express_1.default.Router();
-const db = database_1.Database.getInstance();
 // Get all foods
-router.get('/', auth_1.authenticateToken, async (req, res) => {
+router.get('/', async (req, res) => {
+    const db = new zcql_1.ZCQL();
     try {
-        const foods = await db.getAllFoods();
+        const foods = await db.executeZCQLQuery('select * from foods');
         res.json(foods);
     }
     catch (error) {
@@ -20,13 +21,19 @@ router.get('/', auth_1.authenticateToken, async (req, res) => {
     }
 });
 // Search foods
-router.get('/search', auth_1.authenticateToken, (req, res) => {
+router.get('/search', async (req, res) => {
     try {
+        const search = new search_1.Search();
         const { q } = req.query;
         if (!q || typeof q !== 'string') {
             return res.status(400).json({ error: 'Search query required' });
         }
-        const foods = db.searchFoods(q);
+        const foods = await search.executeSearchQuery({
+            search: q,
+            search_table_columns: {
+                ['foods']: ['name', 'category']
+            }
+        });
         res.json(foods);
     }
     catch (error) {
@@ -35,9 +42,10 @@ router.get('/search', auth_1.authenticateToken, (req, res) => {
     }
 });
 // Get food by ID
-router.get('/:id', auth_1.authenticateToken, (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
-        const food = db.getFoodById(req.params.id);
+        const datastore = new datastore_1.Datastore();
+        const food = await datastore.table('foods').getRow(req.params.id);
         if (!food) {
             return res.status(404).json({ error: 'Food not found' });
         }

@@ -34,6 +34,7 @@ export interface Food {
 }
 
 export interface Meal {
+  completed?: unknown;
   id: string;
   name: string;
   type: 'breakfast' | 'lunch' | 'dinner' | 'snack';
@@ -77,3 +78,26 @@ export interface Notification {
   scheduledTime: string;
   enabled: boolean;
 }
+
+export interface WeightEntry {
+  id: string;
+  userId: string;
+  weight: number; // in kg
+  date: string; // ISO date string
+  notes?: string;
+  createdAt: string;
+}
+
+export interface WeightProgress {
+  currentWeight: number;
+  startWeight: number;
+  targetWeight: number;
+  weightChange: number; // positive for gain, negative for loss
+  dailyChange: number;
+  weeklyChange: number;
+  monthlyChange: number;
+  progressPercentage: number; // towards target
+  daysTracked: number;
+  entries: WeightEntry[];
+}
+

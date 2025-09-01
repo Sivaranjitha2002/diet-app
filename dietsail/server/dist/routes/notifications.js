@@ -5,13 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const database_1 = require("../config/database");
-const auth_1 = require("../middleware/auth");
 const router = express_1.default.Router();
-const db = database_1.Database.getInstance();
+// Load environment variables
 // Get user notifications
-router.get('/', auth_1.authenticateToken, (req, res) => {
+router.get('/', (req, res) => {
     try {
-        const notifications = db.getNotificationsByUserId(req.user.userId);
+        const db = database_1.Database.getInstance();
+        const notifications = db.getNotificationsByUserId(req.params.userId);
         res.json(notifications);
     }
     catch (error) {
@@ -20,8 +20,9 @@ router.get('/', auth_1.authenticateToken, (req, res) => {
     }
 });
 // Update notification
-router.put('/:id', auth_1.authenticateToken, (req, res) => {
+router.put('/:id', (req, res) => {
     try {
+        const db = database_1.Database.getInstance();
         const notification = db.notifications.get(req.params.id);
         if (!notification || notification.userId !== req.user.userId) {
             return res.status(404).json({ error: 'Notification not found' });
@@ -38,8 +39,9 @@ router.put('/:id', auth_1.authenticateToken, (req, res) => {
     }
 });
 // Toggle notification
-router.patch('/:id/toggle', auth_1.authenticateToken, (req, res) => {
+router.patch('/:id/toggle', (req, res) => {
     try {
+        const db = database_1.Database.getInstance();
         const notification = db.notifications.get(req.params.id);
         if (!notification || notification.userId !== req.user.userId) {
             return res.status(404).json({ error: 'Notification not found' });

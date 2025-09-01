@@ -1,0 +1,10 @@
+<!-- filepath: /Users/ranjitha-18338/Documents/diet-app/dietsail/public/diet-icon.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" fill="none">
+  <rect width="192" height="192" rx="20" fill="#16a34a"/>
+  <path d="M96 40c-30.9 0-56 25.1-56 56s25.1 56 56 56 56-25.1 56-56-25.1-56-56-56z" fill="#ffffff"/>
+  <path d="M96 60c-19.9 0-36 16.1-36 36s16.1 36 36 36 36-16.1 36-36-16.1-36-36-36z" fill="#16a34a"/>
+  <circle cx="96" cy="96" r="8" fill="#ffffff"/>
+  <path d="M80 80h32v4H80z" fill="#ffffff"/>
+  <path d="M80 108h32v4H80z" fill="#ffffff"/>
+  <path d="M88 88h16v16H88z" fill="none" stroke="#ffffff" stroke-width="2"/>
+</svg>
