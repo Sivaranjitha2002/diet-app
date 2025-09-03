@@ -71,7 +71,7 @@ class Database {
             id: Date.now().toString(),
             createdAt: formattedDate
         };
-        const response = await datastore.table('30268000000048631').insertRow(newMeal);
+        const response = await datastore.table('meals').insertRow(newMeal);
         return response;
     }
     async getMealsByUserId(userId) {
@@ -277,7 +277,6 @@ class Database {
             const zcql = new zcql_1.ZCQL();
             const now = new Date();
             const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
-            console.log('Checking for meal notifications to send at:', currentTime);
             // Find pending meal notifications for current time (within 5 minutes window)
             const timeWindow = 5; // minutes
             const timeRanges = this.getTimeRange(currentTime, timeWindow);

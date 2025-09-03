@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Apple, User, Phone, Calendar, Ruler, Weight } from 'lucide-react';
 import { Datastore } from '@zcatalyst/datastore';
+import { ZCQL } from '@zcatalyst/zcql';
 
 export function AuthForm({ userName, userId }) {
   const [loading, setLoading] = useState(false);
@@ -45,6 +46,20 @@ export function AuthForm({ userName, userId }) {
     return Object.keys(errors).length === 0;
   };
 
+  const checkIfRegisteredUser = async () => {
+    try {
+      const zcql = new ZCQL();
+      const user = await zcql.executeZCQLQuery(`select * from users where id=${userId}`);
+      return user[0].users ? user[0].users : null;
+    } catch (error) {
+      console.error('Error checking if user is registered:', error);
+    }
+  };
+
+  const redirectToDashboard = () => {
+    return;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -60,7 +75,7 @@ export function AuthForm({ userName, userId }) {
     try {
         // Add minimum loading time to show the processing state
         const [result] = await Promise.all([
-          datastore.table('30268000000046736').insertRow({
+          datastore.table('users').insertRow({
             id: userId,
             ...formData
           }),
@@ -70,11 +85,13 @@ export function AuthForm({ userName, userId }) {
         
         // Success - you might want to redirect or show success message
         console.log('Registration successful:', result);
+        redirectToDashboard();
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Registration failed!';
+      const errorMessage = err instanceof Error ? err.message === 'Conflict'? 'User already exists!': err.message : 'Registration failed!';
       setError(errorMessage);
     } finally {
       setLoading(false);
+      
     }
   };
 
@@ -94,7 +111,7 @@ export function AuthForm({ userName, userId }) {
     }
   };
 
-  return (
+  return ( !checkIfRegisteredUser() ?
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
         {/* Header */}
@@ -272,5 +289,6 @@ export function AuthForm({ userName, userId }) {
         </div>
       </div>
     </div>
+    : redirectToDashboard()
   );
 }

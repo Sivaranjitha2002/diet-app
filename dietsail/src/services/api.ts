@@ -50,8 +50,8 @@ class ApiService {
     });
   }
 
-  async getNutritionGoals() {
-    return this.request('/users/nutrition-goals');
+  async getNutritionGoals(userId: string) {
+    return this.request(`/users/nutrition-goals?userId=${encodeURIComponent(userId)}`);
   }
 
   // Food methods

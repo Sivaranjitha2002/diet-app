@@ -6,7 +6,6 @@ import { User, Food, Meal, DietPlan, Notification, ProgressEntry, AIRecommendati
 import { Datastore } from '@zcatalyst/datastore';
 import { ZCQL } from '@zcatalyst/zcql';
 import { PushNotification } from '@zcatalyst/push-notification';
-import { create } from 'domain';
 
 export class Database {
   private static instance: Database;
@@ -87,13 +86,12 @@ export class Database {
       id: Date.now().toString(),
       createdAt: formattedDate
     };
-    const response = await datastore.table('30268000000048631').insertRow(newMeal);
+    const response = await datastore.table('meals').insertRow(newMeal);
     return response;
   }
 
   public async getMealsByUserId(userId: string): Promise<Array<Record<string, unknown>>> {
     const zcql: ZCQL = new ZCQL();
-    console.log('Fetching meals for user:', userId);
     if (!userId) return [];
 
     const meals = await zcql.executeZCQLQuery(`select * from meals where userId='${userId}' and completed='false'`);
@@ -354,8 +352,6 @@ export class Database {
       const zcql = new ZCQL();
       const now = new Date();
       const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
-
-      console.log('Checking for meal notifications to send at:', currentTime);
 
       // Find pending meal notifications for current time (within 5 minutes window)
       const timeWindow = 5; // minutes

@@ -3,8 +3,8 @@
 	"build_path": "./",
 	"stack": "node20",
 	"env_variables": {
-		"PROJECT_CONFIG" : "{\"project_id\": \"30268000000044001\",\"project_key\": \"1034503833\",\"project_domain\": \"diet-app-2-101894730.development\",\"environment\": \"Development\"}",
-		"AUTH_CONFIG": "{\"client_id\": \"1000.PQLJFH0VKR6MDHKWG2C5QZV44OF0RY\",\"client_secret\": \"ac617fc16e3beded165385af1980c787e41c1d5c7c\",\"refresh_token\": \"1000.24684c9ebe7b02c52f1f41e1daff3dbd.e10567c8bbb56682dd230759050d2efa\"}"
+		"PROJECT_CONFIG" : "{\"project_id\": \"6066000000219001\",\"project_key\": \"10104461531\",\"project_domain\": \"diet-app-825316455.development\",\"environment\": \"Development\"}",
+		"AUTH_CONFIG": "{\"client_id\": \"1000.KYLM7FI2U34CP7QUSX66T2K0D85UOX\",\"client_secret\": \"780de13b12e6a6b976cc6987e5dde0d1234c7e3c56\",\"refresh_token\": \"1000.2c39f66065b09ca7c85adde8eed37bcd.d877f560b35b8d03637b36b039faca35\"}"
 	},
 	"memory": 256,
 	"scripts": {},

@@ -20,7 +20,7 @@ function App() {
   const loadUserData = useCallback(async () => {
     try {
       const [goals, userMeals, userNotifications] = await Promise.all([
-        apiService.getNutritionGoals(),
+        apiService.getNutritionGoals(user.user_id),
         apiService.getUserMeals(user.user_id),
         apiService.getNotifications(user.user_id),
       ]);;
