@@ -245,7 +245,3 @@ For support and questions:
 - Create an issue on GitHub
 - Check the documentation
 - Review the API endpoints
-
----
-
-Built with ❤️ using modern web technologies and AI-powered insights.
