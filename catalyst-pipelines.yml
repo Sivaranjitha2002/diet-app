@@ -1,0 +1,23 @@
+version: 1.0
+jobs:
+  hello:
+    steps:
+      - echo "Hello"
+  world:
+    steps:
+      - echo "World"
+  hello-world:
+    steps:
+      - echo "Hello World!"
+  deploy:
+    steps:
+        - env
+        - npm install /catalyst/zcatalyst-cli-1.26.0.tgz -g
+        - catalyst deploy --token m_1004.97f12505826c691bb0d94a0d2f24f132.34b2a9f3dca236901c5ff4d0c6c87091 --verbose
+stages:
+  - name: build
+    jobs:
+      - - hello
+        - world
+      - hello-world
+      - deploy
